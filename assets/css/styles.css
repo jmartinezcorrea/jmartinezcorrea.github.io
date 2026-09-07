@@ -1,0 +1,539 @@
+/* ==========================================================================
+   Julian Martinez-Correa — academic site
+   Plain CSS. No framework, no build step.
+
+   EVERY visual decision lives in the THEME block below. To restyle the site,
+   change values there and nothing else. The rest of the file only wires those
+   values up to elements, and should rarely need editing.
+
+   Sections
+     1. THEME          <- edit here
+     2. Base
+     3. Layout
+     4. Header and tabs
+     5. Profile
+     6. Research entries
+     7. Footer
+     8. Responsive
+     9. Motion and print
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. THEME — edit this block to restyle the whole site
+   ========================================================================== */
+
+:root {
+
+  /* --- Colour -------------------------------------------------------------
+     Light, warm, near-monochrome with a single accent.
+     If you change --text or --bg, re-check contrast: body text wants at least
+     4.5:1 against the background, and --text-faint is used at ~13px so it
+     needs 4.5:1 too. https://webaim.org/resources/contrastchecker/          */
+
+  --bg:          #fdfdfb;   /* page background                              */
+  --bg-subtle:   #f5f4ef;   /* hover fills, placeholder chips               */
+  --text:        #1b1b19;   /* body text, headings                          */
+  --text-muted:  #56534c;   /* coauthors, section labels, abstract text     */
+  --text-faint:  #706b62;   /* journal/status lines, footer, dt labels      */
+  --rule:        #e3e1d9;   /* hairline dividers                            */
+  --rule-strong: #cfccc1;   /* photo border, link separators                */
+  --accent:      #8c2332;   /* links, active tab  (muted maroon)            */
+  --accent-deep: #6d1a26;   /* link hover                                   */
+  --accent-wash: #f4ebec;   /* active tab background                        */
+
+  /* Try a different accent by replacing the three --accent values, e.g.
+       slate blue   #2f4a6b / #223751 / #eaeef3
+       forest green #2f5540 / #223f30 / #e9f0eb
+       ink / no hue #333230 / #1b1b19 / #efeee9                             */
+
+
+  /* --- Type ---------------------------------------------------------------
+     Two system stacks, so there are no web fonts and no network requests.
+     Swap --font-body to var(--font-sans) for an all-sans site.             */
+
+  --font-serif: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia,
+                "Times New Roman", Times, serif;
+  --font-sans:  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+                Arial, sans-serif;
+
+  --font-body: var(--font-serif);   /* prose, headings, paper titles        */
+  --font-ui:   var(--font-sans);    /* nav, labels, metadata, link rows     */
+
+  --size-base:          1.0625rem;  /* body text                            */
+  --size-base-mobile:   1rem;
+  --line-height:        1.65;
+
+  --size-h1:            clamp(1.75rem, 1.45rem + 1.2vw, 2.2rem);
+  --size-section-title: 0.78rem;    /* the small caps "PUBLICATIONS" labels */
+  --size-entry-title:   1.05rem;    /* paper titles                         */
+  --size-meta:          0.84rem;    /* coauthors, journal line              */
+  --size-ui:            0.83rem;    /* nav tabs                             */
+  --size-small:         0.82rem;    /* footer                               */
+
+  --tracking-caps:      0.14em;     /* letter-spacing on small caps labels  */
+
+
+  /* --- Layout ------------------------------------------------------------ */
+
+  --wrap:        52rem;   /* page container width                           */
+  --measure:     44rem;   /* max width of running text and research entries */
+  --gutter:      1.5rem;  /* left/right page padding                        */
+  --gutter-mobile: 1.15rem;
+
+  --section-gap: 2.75rem; /* vertical padding around each section           */
+  --section-gap-mobile: 2.25rem;
+  --entry-gap:   1.4rem;  /* vertical padding around each research entry    */
+
+  /* Approximate sticky-header height, used to offset anchor jumps so a
+     heading is not hidden underneath. site.js replaces this with the real
+     measured height; the static value is what no-JavaScript visitors get.  */
+  --header-h: 4.25rem;
+
+
+  /* --- Photo -------------------------------------------------------------- */
+
+  --photo-width:        11rem;    /* column width on desktop                */
+  --photo-width-mobile: 10.5rem;  /* cap on narrow screens                  */
+  --photo-aspect:       4 / 5;    /* try 1 / 1 for a square, 3 / 4 for taller */
+  --photo-position:     50% 30%;  /* which part of the photo to keep when
+                                     cropping; lower the 2nd number to show
+                                     more of the top of the frame           */
+  --photo-radius:       0;        /* e.g. 4px, or 50% for a circle          */
+  --photo-border:       1px solid var(--rule-strong);
+  --social-align:       flex-start; /* icon row under the photo; center
+                                       centres it on the photo instead      */
+
+
+  /* --- Details ------------------------------------------------------------ */
+
+  --radius-pill:  999px;  /* nav tab shape; 4px gives square-ish tabs       */
+  --focus-width:  2px;    /* keyboard focus ring                            */
+  --focus-offset: 3px;
+}
+
+
+/* ==========================================================================
+   2. Base
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--size-base);
+  line-height: var(--line-height);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-wrap: break-word;
+}
+
+h1, h2, h3 { line-height: 1.25; margin: 0; font-weight: 600; }
+
+p { margin: 0 0 1em; }
+p:last-child { margin-bottom: 0; }
+
+a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+}
+a:hover { color: var(--accent-deep); text-decoration-thickness: 2px; }
+
+:focus-visible {
+  outline: var(--focus-width) solid var(--accent);
+  outline-offset: var(--focus-offset);
+  border-radius: 2px;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+/* Fixed rather than absolute, so it lands at the top of the viewport even if
+   focus reaches it while the page is scrolled down. */
+.skip-link {
+  position: fixed;
+  top: -6rem;
+  left: 0.75rem;
+  z-index: 100;
+  background: var(--bg);
+  color: var(--accent);
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: 4px;
+}
+.skip-link:focus { top: 0.75rem; }
+
+/* ==========================================================================
+   3. Layout
+   ========================================================================== */
+
+.wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.section {
+  padding-block: var(--section-gap);
+  border-top: 1px solid var(--rule);
+  scroll-margin-top: calc(var(--header-h) + 0.75rem);
+}
+.section:first-child { border-top: 0; }
+
+.section--profile { padding-top: calc(var(--section-gap) + 0.5rem); }
+
+.section__title {
+  font-family: var(--font-ui);
+  font-size: var(--size-section-title);
+  font-weight: 600;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+
+/* ==========================================================================
+   4. Header and tab navigation
+   ========================================================================== */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg);
+  border-bottom: 1px solid var(--rule);
+}
+
+.header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  padding-block: 0.85rem;
+}
+
+.site-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.site-name:hover { color: var(--accent); }
+
+/* Tabs are real in-page anchors, so they work with JavaScript disabled. */
+.tabs ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tabs a {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: var(--size-ui);
+  line-height: 1;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 0.5rem 0.7rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  transition: color 0.15s ease, background-color 0.15s ease,
+              border-color 0.15s ease;
+}
+
+.tabs a:hover {
+  color: var(--text);
+  background: var(--bg-subtle);
+}
+
+/* The active tab is marked three ways — weight, colour and a ring — so the
+   state never depends on colour perception alone. */
+.tabs a[aria-current] {
+  color: var(--accent);
+  font-weight: 600;
+  background: var(--accent-wash);
+  border-color: var(--rule-strong);
+}
+
+
+/* ==========================================================================
+   5. Profile
+   ========================================================================== */
+
+.profile {
+  display: grid;
+  grid-template-columns: var(--photo-width) minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+
+.profile__aside { min-width: 0; }
+
+.profile__figure { margin: 0; }
+
+.profile__photo {
+  width: 100%;
+  aspect-ratio: var(--photo-aspect);
+  object-fit: cover;
+  object-position: var(--photo-position);
+  border: var(--photo-border);
+  border-radius: var(--photo-radius);
+  background: var(--bg-subtle);
+}
+
+.profile__body { min-width: 0; }
+
+h1 {
+  font-size: var(--size-h1);
+  letter-spacing: -0.012em;
+  margin-bottom: 1.25rem;
+}
+
+.bio {
+  max-width: var(--measure);
+  font-size: 0.98rem;
+}
+
+.profile-contact {
+  margin: 1.5rem 0 0;
+  font-size: 0.98rem;
+}
+
+.inline-links {
+  list-style: none;
+  /* The negative left margin cancels the padding on each link below, so the
+     icon itself lines up with the photo's left edge rather than sitting 4px
+     inside it. With --social-align: center it shifts the row 4px left of
+     centre, which is imperceptible on a column this narrow. */
+  margin: 0.6rem 0 0 -0.25rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: var(--social-align);
+  gap: 0.15rem;            /* the padding below supplies the rest of the gap */
+}
+
+/* The icon is 16px, but the tappable area is padded out to 24x24 so it meets
+   the WCAG 2.2 minimum target size (SC 2.5.8) and is comfortable on a phone. */
+.inline-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+}
+
+.inline-links__icon {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+  fill: currentColor;
+}
+
+
+/* ==========================================================================
+   6. Research entries
+   ========================================================================== */
+
+.entries {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.entry {
+  padding-block: var(--entry-gap);
+  border-top: 1px solid var(--rule);
+  max-width: var(--measure);
+}
+.entry:first-child { border-top: 0; padding-top: 0; }
+.entry:last-child { padding-bottom: 0; }
+
+.entry__title {
+  font-size: var(--size-entry-title);
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  text-wrap: balance;
+}
+
+.entry__title a {
+  color: inherit;
+  text-decoration-color: var(--rule-strong);
+}
+.entry__title a:hover {
+  color: var(--accent);
+  text-decoration-color: currentColor;
+}
+
+.entry__meta {
+  font-family: var(--font-ui);
+  font-size: var(--size-meta);
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.5rem;
+}
+
+.entry__authors { min-width: 0; }
+
+/* Coauthor names link to their own sites. Kept in the body colour with a
+   faint underline so a long author list does not turn into a row of loud
+   accent-coloured links. */
+.entry__authors a {
+  color: inherit;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 0.15em;
+}
+.entry__authors a:hover {
+  color: var(--accent);
+  text-decoration-color: currentColor;
+}
+
+.entry__status {
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+/* Separator only when a status actually follows an author list, and attached
+   to the authors so a long coauthor list that pushes the status onto its own
+   line does not strand a dot at the start of that line. */
+.entry__meta:has(.entry__status) > .entry__authors::after {
+  content: "·";
+  margin-left: 0.5rem;
+  font-style: normal;
+  color: var(--rule-strong);
+}
+
+/* Native <details> keeps the list scannable and needs no JavaScript. */
+.entry__abstract { margin-bottom: 0; }
+
+.entry__abstract > summary {
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  color: var(--text-muted);
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.15rem 0;
+}
+.entry__abstract > summary::-webkit-details-marker { display: none; }
+.entry__abstract > summary::before {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+}
+.entry__abstract[open] > summary::before { transform: rotate(45deg); }
+.entry__abstract > summary:hover { color: var(--accent); }
+
+.entry__abstract > p {
+  margin: 0.5rem 0 0;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--rule);
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+
+/* ==========================================================================
+   7. Footer
+   ========================================================================== */
+
+.site-footer {
+  border-top: 1px solid var(--rule);
+  margin-top: 3rem;
+  padding-block: 2rem 3rem;
+  font-family: var(--font-ui);
+  font-size: var(--size-small);
+  color: var(--text-faint);
+}
+.site-footer p { margin: 0 0 0.3rem; }
+
+
+/* ==========================================================================
+   8. Responsive
+   ========================================================================== */
+
+/* Tablet and below: photo above the text, capped so it never dominates. */
+@media (max-width: 46rem) {
+
+  /* Deliberately generous: with the tabs wrapped the header can reach ~7.4rem,
+     and this static value is what no-JavaScript visitors scroll against.
+     site.js replaces it with the measured height when it runs. Overshooting
+     costs a little whitespace; undershooting hides the heading. */
+  :root { --header-h: 7.5rem; }
+
+  .header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.55rem;
+    padding-block: 0.7rem;
+  }
+
+  /* Let the tabs wrap rather than clip, pulled flush with the container. */
+  .tabs { width: 100%; }
+  .tabs ul { margin-left: -0.7rem; }
+
+  .profile {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.4rem;
+  }
+  .profile__aside { max-width: var(--photo-width-mobile); }
+}
+
+@media (max-width: 30rem) {
+  :root {
+    --gutter: var(--gutter-mobile);
+    --size-base: var(--size-base-mobile);
+    --section-gap: var(--section-gap-mobile);
+  }
+  .tabs a { padding: 0.45rem 0.6rem; font-size: 0.8rem; }
+}
+
+
+/* ==========================================================================
+   9. Motion and print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  .site-header, .skip-link, .site-footer__meta { display: none; }
+  body { font-size: 11pt; background: #fff; }
+  .section { border-top: 1px solid #ccc; page-break-inside: avoid; }
+  a { color: #000; text-decoration: underline; }
+}
