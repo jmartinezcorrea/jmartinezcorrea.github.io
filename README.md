@@ -81,6 +81,7 @@ them to elements and should rarely need editing.
 |---|---|
 | Accent colour (links, active tab) | `--accent`, `--accent-deep`, `--accent-wash` |
 | Page background / text colour | `--bg`, `--text`, `--text-muted`, `--text-faint` |
+| About section band tone | `--bg-band` (kept close to `--bg` on purpose; the band is painted full-width with `box-shadow` + `clip-path`, since the sections sit inside `.wrap`) |
 | Body typeface | `--font-body` (set it to `var(--font-sans)` for an all-sans site) |
 | Nav and label typeface | `--font-ui` |
 | Base text size | `--size-base` |
@@ -89,7 +90,8 @@ them to elements and should rarely need editing.
 | Space between sections | `--section-gap` |
 | Photo size | `--photo-width`, `--photo-width-mobile` |
 | Photo shape and crop | `--photo-aspect`, `--photo-position`, `--photo-radius` |
-| Social icon row alignment | `--social-align` (`flex-start` = left-aligned under photo, `center` = centred) |
+| CV/GitHub/X row alignment | `--social-align` (`center` = centred under the photo, `flex-start` = left-aligned) |
+| Nav tab + section label size | `--size-section-title` (both share it, so they stay a matched set) |
 | Tab shape | `--radius-pill` (use `4px` for square-ish tabs) |
 
 The THEME block includes three ready-made alternative accent palettes as
@@ -110,9 +112,10 @@ Two cautions:
 
 ### The bio and contact links
 
-Both are in `<section id="about">` near the top of `index.html`. The bio covers
-the PhD program, research interests, prior IDB experience and degrees. The
-contact sentence links the email address only. Below the photo, a single row
+Both are in `<section id="about">` near the top of `index.html`. The `<h1>`
+name sits above the photo/bio grid, centred on the page; the sticky header
+holds only the nav. The bio covers the PhD program, research interests, prior
+IDB experience and degrees. The contact sentence links the email address only. Below the photo, a single row
 (`<ul class="inline-links">`) links CV, GitHub and X, separated by centred
 middle-dot separators (`CV · GitHub · X`); the dots are CSS generated content
 on `li:not(:first-child)::before`, not part of the link text.

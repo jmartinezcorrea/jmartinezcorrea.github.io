@@ -32,7 +32,10 @@
      needs 4.5:1 too. https://webaim.org/resources/contrastchecker/          */
 
   --bg:          #fdfdfb;   /* page background                              */
-  --bg-subtle:   #f5f4ef;   /* hover fills, placeholder chips               */
+  --bg-subtle:   #f5f4ef;   /* hover fills, photo backdrop                  */
+  --bg-band:     #faf9f5;   /* the About section band — deliberately only a
+                               few steps off --bg so it reads as a change of
+                               paper, not a coloured panel                  */
   --text:        #1b1b19;   /* body text, headings                          */
   --text-muted:  #56534c;   /* coauthors, section labels, abstract text     */
   --text-faint:  #706b62;   /* journal/status lines, footer, dt labels      */
@@ -65,7 +68,8 @@
   --line-height:        1.65;
 
   --size-h1:            clamp(1.75rem, 1.45rem + 1.2vw, 2.2rem);
-  --size-section-title: 0.78rem;    /* the small caps "PUBLICATIONS" labels */
+  --size-section-title: 0.72rem;    /* small caps labels; the nav tabs share
+                                       this size so the two read as one set */
   --size-entry-title:   1.05rem;    /* paper titles                         */
   --size-meta:          0.84rem;    /* coauthors, journal line              */
   --size-ui:            0.83rem;    /* nav tabs                             */
@@ -101,8 +105,8 @@
                                      more of the top of the frame           */
   --photo-radius:       0;        /* e.g. 4px, or 50% for a circle          */
   --photo-border:       1px solid var(--rule-strong);
-  --social-align:       flex-start; /* icon row under the photo; center
-                                       centres it on the photo instead      */
+  --social-align:       center;   /* CV · GitHub · X row under the photo;
+                                     flex-start left-aligns it instead      */
 
 
   /* --- Details ------------------------------------------------------------ */
@@ -192,14 +196,21 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .section:first-child { border-top: 0; }
 
-/* A subtle off-white band distinguishes the profile section from the rest of
-   the page without introducing a new colour — it's the same --bg-subtle tone
-   already used for hover fills. The band is edge-to-edge automatically: only
-   .wrap is width-constrained, .section itself spans the full viewport. The
-   divider below comes for free from the next section's own border-top. */
+/* A subtle off-white band marks the profile section off from the rest of the
+   page. The divider below it comes for free from the next section's border-top.
+
+   The sections sit *inside* .wrap (<main><div class="wrap"><section>), so a
+   plain background would stop at the content column. box-shadow paints the
+   colour outwards past that column, and clip-path lets it through
+   horizontally while still cutting it off at the section's own top and
+   bottom edges. Unlike a 100vw rule this cannot cause horizontal overflow,
+   and unlike moving .wrap inside each section it leaves every other
+   section's divider width untouched. */
 .section--profile {
   padding-top: calc(var(--section-gap) + 0.5rem);
-  background: var(--bg-subtle);
+  background: var(--bg-band);
+  box-shadow: 0 0 0 100vmax var(--bg-band);
+  clip-path: inset(0 -100vmax);
 }
 
 .section__title {
@@ -225,28 +236,19 @@ img { max-width: 100%; height: auto; display: block; }
   border-bottom: 1px solid var(--rule);
 }
 
+/* The nav is the header's only content now that the name has moved into the
+   page, so it centres rather than sitting off to one side. */
 .header-inner {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.5rem 1.5rem;
+  justify-content: center;
   padding-block: 0.85rem;
 }
-
-.site-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text);
-  text-decoration: none;
-  white-space: nowrap;
-}
-.site-name:hover { color: var(--accent); }
 
 /* Tabs are real in-page anchors, so they work with JavaScript disabled. */
 .tabs ul {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.15rem 0.25rem;
   list-style: none;
   margin: 0;
@@ -260,7 +262,7 @@ img { max-width: 100%; height: auto; display: block; }
 .tabs a {
   display: block;
   font-family: var(--font-ui);
-  font-size: var(--size-ui);
+  font-size: var(--size-section-title);
   line-height: 1;
   text-transform: uppercase;
   letter-spacing: var(--tracking-caps);
@@ -315,10 +317,12 @@ img { max-width: 100%; height: auto; display: block; }
 
 .profile__body { min-width: 0; }
 
+/* The name sits above the photo/bio grid and is centred on the page. */
 h1 {
   font-size: var(--size-h1);
   letter-spacing: -0.012em;
-  margin-bottom: 1.25rem;
+  text-align: center;
+  margin-bottom: 1.75rem;
 }
 
 .bio {
@@ -334,11 +338,7 @@ h1 {
 /* CV · GitHub · X, as a single row beneath the photo. */
 .inline-links {
   list-style: none;
-  /* The negative left margin cancels the padding on the first link below, so
-     it lines up with the photo's left edge rather than sitting 4px inside
-     it. With --social-align: center it shifts the row 4px left of centre,
-     which is imperceptible on a column this narrow. */
-  margin: 0.6rem 0 0 -0.25rem;
+  margin: 0.6rem 0 0;
   padding: 0;
   display: flex;
   flex-wrap: wrap;
@@ -532,16 +532,10 @@ h1 {
      costs a little whitespace; undershooting hides the heading. */
   :root { --header-h: 7.5rem; }
 
-  .header-inner {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.55rem;
-    padding-block: 0.7rem;
-  }
+  .header-inner { padding-block: 0.7rem; }
 
-  /* Let the tabs wrap rather than clip, pulled flush with the container. */
+  /* Let the tabs wrap onto a second line rather than clip. */
   .tabs { width: 100%; }
-  .tabs ul { margin-left: -0.7rem; }
 
   .profile {
     grid-template-columns: minmax(0, 1fr);
