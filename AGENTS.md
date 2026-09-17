@@ -68,9 +68,10 @@ type="application/ld+json">` block).
   double-check against the CV" for known CV-vs-published-record
   discrepancies).
 - **Work in progress**: same entry shape, no abstract yet.
-- **CV** (`files/cv.pdf`): linked from the contact line in the profile
-  section. Treat its contents as intentionally public — whatever is in that
-  PDF is downloadable by anyone visiting the site.
+- **CV** (`files/cv.pdf`): linked from the `CV · GitHub · X` row beneath the
+  photo (`<ul class="inline-links">`), not from running text. Treat its
+  contents as intentionally public — whatever is in that PDF is downloadable
+  by anyone visiting the site.
 - **Structured data**: a JSON-LD `Person` block in `<head>` carries `sameAs`
   (verified external profile URLs — ORCID, Harris directory, GitHub, X) and
   `alternateName` (name-spelling variants for search). Only add URLs/names

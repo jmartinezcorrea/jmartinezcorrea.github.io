@@ -112,8 +112,10 @@ Two cautions:
 
 Both are in `<section id="about">` near the top of `index.html`. The bio covers
 the PhD program, research interests, prior IDB experience and degrees. The
-contact sentence links the email address and CV. Below the photo, two
-icon-only links point to GitHub and X.
+contact sentence links the email address only. Below the photo, a single row
+(`<ul class="inline-links">`) links CV, GitHub and X, separated by centred
+middle-dot separators (`CV · GitHub · X`); the dots are CSS generated content
+on `li:not(:first-child)::before`, not part of the link text.
 
 ### Adding a paper
 
@@ -176,7 +178,8 @@ publicly downloadable the moment it's pushed.
 ### Replacing the photo
 
 Put the new file at `assets/img/headshot.jpg`. If it is very large, shrink it
-first — the display box is about 176px wide, so 1000px is already generous:
+first — the display box is about 240px wide (`--photo-width` in the THEME
+block), so 1000px is still comfortably retina-sharp:
 
 ```bash
 sips --resampleWidth 1000 assets/img/headshot.jpg

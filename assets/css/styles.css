@@ -93,8 +93,8 @@
 
   /* --- Photo -------------------------------------------------------------- */
 
-  --photo-width:        11rem;    /* column width on desktop                */
-  --photo-width-mobile: 10.5rem;  /* cap on narrow screens                  */
+  --photo-width:        15rem;    /* column width on desktop                */
+  --photo-width-mobile: 13rem;    /* cap on narrow screens                  */
   --photo-aspect:       4 / 5;    /* try 1 / 1 for a square, 3 / 4 for taller */
   --photo-position:     50% 30%;  /* which part of the photo to keep when
                                      cropping; lower the 2nd number to show
@@ -192,7 +192,15 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .section:first-child { border-top: 0; }
 
-.section--profile { padding-top: calc(var(--section-gap) + 0.5rem); }
+/* A subtle off-white band distinguishes the profile section from the rest of
+   the page without introducing a new colour — it's the same --bg-subtle tone
+   already used for hover fills. The band is edge-to-edge automatically: only
+   .wrap is width-constrained, .section itself spans the full viewport. The
+   divider below comes for free from the next section's own border-top. */
+.section--profile {
+  padding-top: calc(var(--section-gap) + 0.5rem);
+  background: var(--bg-subtle);
+}
 
 .section__title {
   font-family: var(--font-ui);
@@ -245,11 +253,17 @@ img { max-width: 100%; height: auto; display: block; }
   padding: 0;
 }
 
+/* Uppercase via text-transform rather than typing caps into the HTML: the
+   source stays Title Case (readable, matches the .section__title source
+   convention below), and most screen readers announce transformed text
+   normally rather than spelling it out letter by letter. */
 .tabs a {
   display: block;
   font-family: var(--font-ui);
   font-size: var(--size-ui);
   line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps);
   color: var(--text-muted);
   text-decoration: none;
   padding: 0.5rem 0.7rem;
@@ -317,27 +331,56 @@ h1 {
   font-size: 0.98rem;
 }
 
+/* CV · GitHub · X, as a single row beneath the photo. */
 .inline-links {
   list-style: none;
-  /* The negative left margin cancels the padding on each link below, so the
-     icon itself lines up with the photo's left edge rather than sitting 4px
-     inside it. With --social-align: center it shifts the row 4px left of
-     centre, which is imperceptible on a column this narrow. */
+  /* The negative left margin cancels the padding on the first link below, so
+     it lines up with the photo's left edge rather than sitting 4px inside
+     it. With --social-align: center it shifts the row 4px left of centre,
+     which is imperceptible on a column this narrow. */
   margin: 0.6rem 0 0 -0.25rem;
   padding: 0;
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: var(--social-align);
-  gap: 0.15rem;            /* the padding below supplies the rest of the gap */
+  gap: 0.45rem;
+  font-family: var(--font-ui);
+  font-size: var(--size-ui);
 }
 
-/* The icon is 16px, but the tappable area is padded out to 24x24 so it meets
-   the WCAG 2.2 minimum target size (SC 2.5.8) and is comfortable on a phone. */
+.inline-links > li {
+  display: flex;
+  align-items: center;
+}
+
+/* Centred middle-dot separators. Generated content isn't exposed to
+   assistive tech, so a screen reader announces "list, 3 items" and nothing
+   is lost by the dot being skipped — it carries no information beyond the
+   visual grouping the list structure already provides. */
+.inline-links > li:not(:first-child)::before {
+  content: "\00B7";
+  margin-right: 0.45rem;
+  color: var(--rule-strong);
+}
+
+/* The icon's tappable area is padded out to 24x24 so it meets the WCAG 2.2
+   minimum target size (SC 2.5.8) and is comfortable on a phone; the CV text
+   link gets the same padding so its hit box matches. Muted by default,
+   accent on hover/focus — the same treatment as nav tabs and entry links,
+   so the plain-text CV link sits naturally next to the two icons rather
+   than standing out as a different kind of control. */
 .inline-links a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0.25rem;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+.inline-links a:hover,
+.inline-links a:focus-visible {
+  color: var(--accent);
 }
 
 .inline-links__icon {
