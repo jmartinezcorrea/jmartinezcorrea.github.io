@@ -1,11 +1,18 @@
 # jmartinezcorrea.github.io
 
-Personal academic website for Julian Martinez-Correa, a third-year PhD student
-at the University of Chicago Harris School of Public Policy.
+Personal academic website for Julian Martinez-Correa, a PhD student at the
+University of Chicago Harris School of Public Policy. One page: profile,
+publications, work in progress.
+
+Live at **<https://jmartinezcorrea.github.io/>**.
 
 Plain static HTML, CSS and ~80 lines of vanilla JavaScript. No framework, no
-build step, no dependencies, no web fonts. Editing means opening a file in a
-text editor.
+build step, no dependencies, no web fonts, no external network requests.
+Editing means opening a file in a text editor.
+
+> **For an AI agent picking this up with no prior context:** read
+> [`AGENTS.md`](AGENTS.md) first. It covers repo conventions, known issues,
+> and pending work in more operational detail than this file.
 
 ---
 
@@ -14,14 +21,15 @@ text editor.
 ```
 index.html               the entire site (one page, three sections)
 assets/css/styles.css    all styling; the THEME block at the top holds every
-                         colour, font and size decision
+                          colour, font and size decision
 assets/js/site.js        highlights the active tab while scrolling
 assets/img/headshot.jpg  profile photo (1000x1333)
 files/cv.pdf             the CV linked from the profile
-404.html
+404.html                 custom not-found page (self-contained, inlined CSS)
 robots.txt
 sitemap.xml
-.nojekyll                tells GitHub Pages to skip Jekyll processing
+.nojekyll                 tells GitHub Pages to skip Jekyll processing
+AGENTS.md                 orientation notes for an AI agent continuing this project
 ```
 
 ---
@@ -41,21 +49,25 @@ closer to how GitHub Pages actually serves the site.
 
 ---
 
-## Publish
+## Publish / deployment
 
-### Repository URL
+The repository **is** the deployment: GitHub Pages serves `main` directly,
+with no build step.
 
-The Git remote already points to `jmartinezcorrea/jmartinezcorrea.github.io`,
-which matches the canonical site URL `https://jmartinezcorrea.github.io/`.
-The older name of the local folder does not affect GitHub Pages and does not
-need to be changed.
+- **Remote:** `git@github.com:jmartinezcorrea/jmartinezcorrea.github.io.git`
+  (SSH — the account has no HTTPS credential helper configured).
+- **Repo:** public. The name matches the GitHub username exactly, so Pages
+  serves it as a *user* site at the bare `https://jmartinezcorrea.github.io/`
+  (no repo-name path segment).
+- **Pages settings:** Settings → Pages → Source: *Deploy from a branch* →
+  `main` / `/ (root)`. Already configured and live.
+- Push to `main` → Pages rebuilds automatically, usually within about a
+  minute.
 
-### Then turn Pages on
-
-1. Commit and push to `main`.
-2. **Settings → Pages → Build and deployment → Source: Deploy from a branch.**
-3. Branch `main`, folder `/ (root)`. Save.
-4. Wait about a minute, then load <https://jmartinezcorrea.github.io/>.
+**If Pages ever stops serving:** GitHub Pages only publishes from a public
+repo on the free plan. If the repo is ever made private, Pages is switched
+off entirely — not just paused — and making the repo public again does
+**not** turn it back on. Re-enable it manually under Settings → Pages.
 
 ---
 
@@ -77,6 +89,7 @@ them to elements and should rarely need editing.
 | Space between sections | `--section-gap` |
 | Photo size | `--photo-width`, `--photo-width-mobile` |
 | Photo shape and crop | `--photo-aspect`, `--photo-position`, `--photo-radius` |
+| Social icon row alignment | `--social-align` (`flex-start` = left-aligned under photo, `center` = centred) |
 | Tab shape | `--radius-pill` (use `4px` for square-ish tabs) |
 
 The THEME block includes three ready-made alternative accent palettes as
@@ -99,13 +112,13 @@ Two cautions:
 
 Both are in `<section id="about">` near the top of `index.html`. The bio covers
 the PhD program, research interests, prior IDB experience and degrees. The
-contact sentence links the email address and CV. Icon-only links point to GitHub
-and X.
+contact sentence links the email address and CV. Below the photo, two
+icon-only links point to GitHub and X.
 
 ### Adding a paper
 
 Copy an existing `<li class="entry">` from the Publications section and edit
-it. The full shape is:
+it. The full shape:
 
 ```html
 <li class="entry">
@@ -131,20 +144,23 @@ webpage. Order is simply the order the `<li>` elements appear in; Publications
 is currently newest first.
 
 Use abstract text you authored or otherwise have permission to republish. The
-four current disclosures contain concise, source-checked website summaries,
-not verbatim copies of publisher abstract text.
+four current disclosures are concise, source-checked website summaries — not
+verbatim publisher abstract text.
 
 Coauthor links are styled to stay in the body colour with a faint underline, so
-a long author list does not turn into a row of loud coloured links.
+a long author list does not turn into a row of loud coloured links. Link each
+coauthor to their own homepage, not a journal profile page.
 
-### Removing a section
+### Removing or adding a section
 
-If a section is empty, delete two things:
+To remove: delete the whole `<section id="…">` block in `<main>`, and its
+`<li>` in the `<nav class="tabs">` list in the header. The active-tab
+highlighting in `site.js` adapts automatically — it reads the nav at runtime,
+nothing there is hardcoded to specific section ids.
 
-1. the whole `<section id="…">` block in `<main>`, and
-2. its `<li>` in the `<nav class="tabs">` list in the header.
-
-The active-tab highlighting adapts on its own.
+To add one back (e.g. Working Papers): use the same linked-title,
+`entry__meta`, collapsible-abstract structure shown under "Adding a paper"
+above, plus a matching `<li>` in the header nav.
 
 ### Replacing the CV
 
@@ -153,7 +169,9 @@ cp /path/to/new-cv.pdf files/cv.pdf
 ```
 
 The link in `index.html` already points at `files/cv.pdf`, so nothing else
-changes.
+changes. Check the new file for personal data you don't want published (phone
+number, ID numbers) before committing — whatever is in `files/cv.pdf` becomes
+publicly downloadable the moment it's pushed.
 
 ### Replacing the photo
 
@@ -167,39 +185,37 @@ sips --resampleWidth 1000 assets/img/headshot.jpg
 Then update the `width`/`height` attributes on the `<img>` to the new pixel
 dimensions so the browser reserves the right space while loading.
 
-### Metadata
+### Metadata and structured data
 
 In the `<head>` of `index.html`: `<title>`, `<meta name="description">`, the
 `og:` tags, and the JSON-LD `Person` block. Keep `description` and
 `og:description` in sync. Update `<lastmod>` in `sitemap.xml` and the `<time>`
-element in the footer after a substantial change.
+element in the footer after a substantial content change.
 
-The Working Papers section is currently omitted because the CV and repository
-do not contain a working-paper title or abstract. Add the section back only
-when real content is available; use the same linked-title and collapsible-
-abstract structure shown under "Adding a paper" above.
+The JSON-LD `Person` block carries `sameAs` (verified profile URLs only —
+currently ORCID, the Harris directory page, GitHub, X) and `alternateName`
+(name spelling variants people search for). Extend both only with links and
+spellings that are actually his.
 
-### Points to double-check against your CV
+**Do not remove** the `google-site-verification` meta tag in `<head>` — it
+verifies domain ownership in Google Search Console. Removing it un-verifies
+the property there.
 
-The publication entries were transcribed from `files/cv.pdf` and then
-checked against the published record via DOI. Three details differ from the CV
-and were resolved in favour of the published version — revert any you disagree
-with:
+### Points to double-check against the CV
+
+Publication entries were transcribed from `files/cv.pdf` and checked against
+the published record via DOI. Three details differ from the CV and were
+resolved in favour of the published version:
 
 1. **Early literacy paper — journal name.** CV says *Journal of Public
    Economics*; the article is in ***Journal of Public Economics Plus***, vol 4,
-   article 100019 (the volume and article numbers on the CV match Plus).
-2. **Early literacy paper — authors.** CV lists Busso and Berlinski; the
-   published record also includes **Horacio Álvarez Marinelli** as first
-   author, so he is listed and linked to his World Bank profile.
-3. **Family Rules — title.** CV says "Nepotism in Mexican Judiciary"; the
-   published title is "Nepotism in **the** Mexican Judiciary".
+   article 100019.
+2. **Early literacy paper — authors.** The published record includes
+   **Horacio Álvarez Marinelli** as first author, not listed on the CV.
+3. **Family Rules — title.** Published title is "Nepotism in **the** Mexican
+   Judiciary" (CV omits "the").
 
-Also worth deciding once and applying everywhere: your name is rendered
-**Julian Martinez-Correa** throughout. Your CV heading uses "Julian Martinez
-Correa" (no hyphen) and some publisher records use "Julián Martínez Correa"
-(accented).
-
-The site describes you as a **third-year PhD student at the University of
-Chicago Harris School of Public Policy**. The downloadable CV lists the degree
-as "Present," which is consistent with the website.
+The site renders the name as **Julian Martinez-Correa** throughout (his CV
+heading omits the hyphen; some publisher records use accented
+"Julián Martínez Correa" — the JSON-LD `alternateName` list covers these
+variants for search purposes without changing the visible text).
